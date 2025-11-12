@@ -1,7 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import type { Message } from '../types';
 import { translateSignToText, translateTextToSign } from '../services/geminiService';
+import { analyzePose } from '../services/poseService';
 import { CameraIcon, HomeIcon, RefreshIcon } from '../constants';
+import { IoHandLeftOutline } from 'react-icons/io5';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -60,14 +62,31 @@ const ChatInterface = () => {
     const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
     const base64Data = imageDataUrl.split(',')[1];
     
-    const translatedText = await translateSignToText(base64Data);
-    
-    if (translatedText) {
-      setMessages(prev => [...prev, { id: Date.now(), text: translatedText, sender: 'user' }]);
-      setSignDescription("Gesture translated successfully.");
-    } else {
-      setSignDescription("Couldn't detect a clear gesture. Please try again.");
+    try {
+      const poseResult = await analyzePose(base64Data);
+      if (poseResult?.text) {
+        setMessages(prev => [...prev, { id: Date.now(), text: poseResult.text, sender: 'user' }]);
+        setSignDescription(poseResult.text);
+      } else {
+        setSignDescription('포즈 인식 결과가 없습니다.');
+      }
+    } catch (error) {
+      console.error('Pose API error:', error);
+      setSignDescription('포즈 분석 중 문제가 발생했습니다. 다시 시도해주세요.');
     }
+
+    try {
+      const translatedText = await translateSignToText(base64Data);
+      const hasMeaningfulText = translatedText && !translatedText.toLowerCase().startsWith('error');
+
+      if (hasMeaningfulText) {
+        setMessages(prev => [...prev, { id: Date.now(), text: translatedText, sender: 'user' }]);
+        setSignDescription('추가 설명이 생성되었습니다.');
+      }
+    } catch (err) {
+      console.error('Gemini translation error:', err);
+    }
+
     setIsProcessing(false);
   }, [isProcessing]);
 
@@ -114,7 +133,12 @@ const ChatInterface = () => {
                 <div className="relative aspect-video bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center w-full">
                     <video ref={videoRef} autoPlay playsInline className={`w-full h-full object-cover ${isWebcamOn ? 'block' : 'hidden'}`}></video>
                     <canvas ref={canvasRef} className="hidden"></canvas>
-                    {!isWebcamOn && <img src="https://i.imgur.com/3wsC4D5.png" alt="AI Assistant" className="w-full h-full object-cover" />}
+                    {!isWebcamOn && (
+                      <div className="flex flex-col items-center justify-center text-blue-600 space-y-2">
+                        <IoHandLeftOutline className="w-20 h-20" />
+                        <p className="text-base font-semibold text-gray-700">카메라를 켜고 제스처를 보여주세요</p>
+                      </div>
+                    )}
                      <div className="absolute top-2 right-2 flex items-center gap-2">
                        <button onClick={handleToggleWebcam} className="p-2 bg-black bg-opacity-40 text-white rounded-full hover:bg-opacity-60 transition-opacity">
                            <CameraIcon className="w-5 h-5" />

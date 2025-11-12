@@ -18,3 +18,18 @@ View your app in AI Studio: https://ai.studio/apps/drive/1n_nV2aExuI5M_BGBLng4Df
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Pose Detection Backend
+
+The webcam pose recognition feature relies on a FastAPI service that uses MediaPipe and OpenCV.
+
+1. Install Python requirements:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
+2. Start the API server:
+   ```bash
+   uvicorn main:app --reload
+   ```
+3. (Optional) If you host it elsewhere, set `VITE_POSE_API_URL` in `.env` to the deployed URL.
