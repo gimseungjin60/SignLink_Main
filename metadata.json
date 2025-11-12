@@ -1,0 +1,7 @@
+{
+  "name": "SignLink - AI Sign Language Translator",
+  "description": "An AI-powered web application that translates sign language to text using your webcam, and text to sign language descriptions, facilitating seamless communication.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
