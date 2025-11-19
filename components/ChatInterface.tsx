@@ -321,8 +321,8 @@ const ChatInterface = () => {
                                 <span className="text-xl font-semibold text-gray-800">{currentSentence || "문장을 만드는 중..."}</span>
                             </div>
                             <div className="flex justify-center gap-4 text-xs text-gray-400 mt-2">
-                                <span>␣ 단어 추가</span>
-                                <span>🖱️ 클릭하여 말하기</span>
+                                <span>␣（Speac Bar)를 눌러 단어 저장 및 추가</span><p></p>
+                                <span>화면을 🖱️클릭하여 음성으로 듣기</span>
                                 <span>ESC 초기화</span>
                             </div>
                             {isSpeaking && <p className="text-xs text-red-500 font-semibold animate-pulse">🔊 음성 변환 중...</p>}
