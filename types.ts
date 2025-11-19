@@ -1,8 +1,7 @@
+export type Screen = 'home' | 'translate' | 'profile';
 
 export interface Message {
   id: number;
   text: string;
-  sender: 'user' | 'ai' | 'system';
+  sender: 'user' | 'bot';
 }
-
-export type Screen = "home" | "translate" | "profile";
